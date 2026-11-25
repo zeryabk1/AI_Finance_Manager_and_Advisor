@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Delete Item{% endblock %}
+{% block content %}
+<h3 class="mb-4">Delete Item</h3>
+<div class="card p-4" style="max-width:500px;">
+    <p>Delete <strong>{{ item.item_name }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'inventory:item_list' %}" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

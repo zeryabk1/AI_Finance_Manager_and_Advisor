@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Inventory{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3><i class="bi bi-box-seam"></i> Inventory {% if company %}<small class="text-muted fs-6">({{ company.name }})</small>{% endif %}</h3>
+    <div>
+        <a href="{% url 'inventory:valuation' %}" class="btn btn-outline-primary"><i class="bi bi-calculator"></i> Valuation ({{ company.standard_label }})</a>
+        <a href="{% url 'inventory:item_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Item</a>
+    </div>
+</div>
+{% if low_stock_count %}
+    <div class="alert alert-warning">⚠️ {{ low_stock_count }} item(s) are low on stock.</div>
+{% endif %}
+<div class="table-responsive">
+<table class="table table-striped bg-white shadow-sm" data-datatable>
+    <thead><tr><th>Item</th><th>SKU</th><th>Qty</th><th>Cost Price</th><th>Selling Price</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+    {% for item in items %}
+        <tr class="{% if item.is_low_stock %}table-warning{% endif %}">
+            <td>{{ item.item_name }}</td>
+            <td>{{ item.sku }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.cost_price }}</td>
+            <td>{{ item.selling_price }}</td>
+            <td>{% if item.is_low_stock %}<span class="badge bg-warning text-dark">Low Stock</span>{% else %}<span class="badge bg-success">OK</span>{% endif %}</td>
+            <td>
+                <a href="{% url 'inventory:lot_list' item.pk %}" class="btn btn-sm btn-outline-secondary">Layers</a>
+                <a href="{% url 'inventory:lot_create' item.pk %}" class="btn btn-sm btn-outline-success">Receive</a>
+                <a href="{% url 'inventory:item_update' item.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                <a href="{% url 'inventory:item_delete' item.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="7" class="text-center text-muted">No items yet.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

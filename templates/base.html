@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Finance Manager{% endblock %}</title>
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% load static %}{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="aurora-blob b1"></div>
+<div class="aurora-blob b2"></div>
+<div class="aurora-blob b3"></div>
+{% if user.is_authenticated %}
+<div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar bg-dark text-white p-3" id="sidebarNav" style="width:230px;">
+        <h5 class="mb-4 d-flex align-items-center gap-2">
+            <img src="{% static 'img/logo.png' %}" alt="AI Finance Manager" style="width:28px;height:28px;border-radius:7px;">
+            Finance Manager
+        </h5>
+        <ul class="nav nav-pills flex-column gap-1">
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'dashboard:home' %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'companies:list' %}"><i class="bi bi-building"></i> Companies</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'accounting:account_list' %}"><i class="bi bi-journal-text"></i> Chart of Accounts</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'accounting:journal_list' %}"><i class="bi bi-pencil-square"></i> Journal Entries</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'accounting:ledger' %}"><i class="bi bi-book"></i> General Ledger</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'accounting:trial_balance' %}"><i class="bi bi-calculator"></i> Trial Balance</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'accounting:profit_and_loss' %}"><i class="bi bi-graph-up"></i> Profit &amp; Loss</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'accounting:balance_sheet' %}"><i class="bi bi-clipboard-data"></i> Balance Sheet</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'inventory:item_list' %}"><i class="bi bi-box-seam"></i> Inventory</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'assets:asset_list' %}"><i class="bi bi-building-gear"></i> Fixed Assets</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'transactions:customer_list' %}"><i class="bi bi-people"></i> Customers</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'transactions:supplier_list' %}"><i class="bi bi-truck"></i> Suppliers</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'transactions:invoice_list' %}"><i class="bi bi-receipt"></i> Sales Invoices</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'transactions:bill_list' %}"><i class="bi bi-cart"></i> Purchase Bills</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'transactions:payment_list' %}"><i class="bi bi-credit-card"></i> Payments</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'transactions:budget_list' %}"><i class="bi bi-piggy-bank"></i> Budget</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'reports:ai_dashboard' %}"><i class="bi bi-robot"></i> AI Reports</a></li>
+            {% if user.role == 'SUPER_ADMIN' %}
+                <li class="mt-3 mb-1 small text-uppercase text-muted px-2">Super Admin</li>
+                <li class="nav-item"><a class="nav-link text-white" href="/admin/" target="_blank"><i class="bi bi-shield-lock"></i> Django Admin (Manage Users)</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <!-- Main content -->
+    <div class="flex-grow-1">
+        <nav class="navbar navbar-expand navbar-light bg-white border-bottom px-3">
+            <button class="btn btn-sm btn-light d-md-none me-2" type="button" onclick="document.getElementById('sidebarNav').classList.toggle('open')">
+                <i class="bi bi-list"></i>
+            </button>
+            <span class="navbar-text">Welcome, {{ user.username }} ({{ user.get_role_display }})</span>
+            <div class="ms-auto d-flex gap-3">
+                <a href="{% url 'accounts:profile' %}" class="text-decoration-none"><i class="bi bi-person-circle"></i> Profile</a>
+                <a href="{% url 'accounts:logout' %}" class="text-decoration-none text-danger"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            </div>
+        </nav>
+        <div class="p-4">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% block content %}{% endblock %}
+        </div>
+        <footer class="text-center text-muted py-3 border-top">
+            &copy; {% now "Y" %} AI Finance Manager — Final Year Project
+        </footer>
+    </div>
+</div>
+{% else %}
+    {% block auth_content %}{% endblock %}
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    // Auto-enable DataTables (sorting/search/pagination) on any table marked data-datatable.
+    // Skip tables that only contain a single "empty state" row (e.g. "No entries yet"),
+    // since that row has 1 cell instead of matching the header's column count.
+    $(document).ready(function () {
+        $('table[data-datatable]').each(function () {
+            var $table = $(this);
+            var headerCount = $table.find('thead th').length;
+            var $rows = $table.find('tbody tr');
+            if ($rows.length === 1 && $rows.first().find('td').length < headerCount) {
+                return; // empty state row — nothing to sort/search, leave it as is
+            }
+            $table.DataTable({ pageLength: 10 });
+        });
+    });
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

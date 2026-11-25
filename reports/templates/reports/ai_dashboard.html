@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block title %}AI Reports{% endblock %}
+{% block content %}
+<h3 class="mb-4"><i class="bi bi-robot"></i> AI Reports {% if company %}<small class="text-muted fs-6">({{ company.name }})</small>{% endif %}</h3>
+
+{% if not company %}
+    <div class="alert alert-info">Create a company first to see AI insights.</div>
+{% else %}
+
+<div class="row g-3 mb-4">
+    <!-- Business Stability Index -->
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm h-100">
+            <h6>Business Stability Index</h6>
+            <div class="text-center my-2">
+                <div class="fs-1 fw-bold">{{ stability.stability_score }}<span class="fs-6 text-muted">/100</span></div>
+                <span class="badge
+                    {% if stability.status == 'Excellent' %}bg-success
+                    {% elif stability.status == 'Good' %}bg-primary
+                    {% elif stability.status == 'Average' %}bg-warning text-dark
+                    {% else %}bg-danger{% endif %}">
+                    {{ stability.status }}
+                </span>
+            </div>
+            <ul class="list-unstyled small mb-0">
+                <li>Liquidity: {{ stability.liquidity_score }}</li>
+                <li>Profitability: {{ stability.profitability_score }}</li>
+                <li>Cash Flow: {{ stability.cash_flow_score }}</li>
+                <li>Revenue Growth: {{ stability.revenue_growth_score }}</li>
+                <li>Expense Control: {{ stability.expense_control_score }}</li>
+                <li>Debt Ratio: {{ stability.debt_ratio_score }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Bankruptcy Prediction -->
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm h-100">
+            <h6>Bankruptcy Prediction</h6>
+            {% if bankruptcy %}
+                <div class="text-center my-2">
+                    <div class="fs-1 fw-bold">{{ bankruptcy.probability }}%</div>
+                    <span class="badge
+                        {% if bankruptcy.risk_level == 'Low' %}bg-success
+                        {% elif bankruptcy.risk_level == 'Medium' %}bg-warning text-dark
+                        {% else %}bg-danger{% endif %}">
+                        {{ bankruptcy.risk_level }} Risk
+                    </span>
+                </div>
+                <p class="small text-muted mb-0">{{ bankruptcy.recommendation }}</p>
+            {% else %}
+                <p class="text-muted small">{{ bankruptcy_error }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Cash Flow Prediction -->
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm h-100">
+            <h6>Cash Flow Prediction (Next Month)</h6>
+            <ul class="list-unstyled mb-0">
+                <li>Predicted Income: <strong class="text-success">{{ cash_flow.predicted_income }}</strong></li>
+                <li>Predicted Expenses: <strong class="text-danger">{{ cash_flow.predicted_expenses }}</strong></li>
+                <li>Net Cash Flow: <strong>{{ cash_flow.net_cash_flow }}</strong></li>
+            </ul>
+            {% if not cash_flow.has_enough_data %}
+                <p class="small text-muted mt-2">Add at least 3 months of journal entries for a trend-based forecast; showing an average-based estimate for now.</p>
+            {% endif %}
+            <canvas id="cashFlowChart" height="140"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Fraud Detection -->
+<div class="card p-3 shadow-sm mb-4">
+    <h6>Fraud Detection — Recent Journal Entries</h6>
+    {% if fraud_error %}
+        <p class="text-muted small">{{ fraud_error }}</p>
+    {% else %}
+        <div class="table-responsive">
+        <table class="table table-sm">
+            <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Risk Score</th><th>Recommendation</th></tr></thead>
+            <tbody>
+            {% for row in fraud_rows %}
+                <tr class="{% if row.is_anomaly %}table-danger{% endif %}">
+                    <td>{{ row.entry.date }}</td>
+                    <td>{{ row.entry.description }}</td>
+                    <td>{{ row.entry.amount }}</td>
+                    <td>{{ row.risk_score }}/100</td>
+                    <td>{{ row.recommendation }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5" class="text-center text-muted">No journal entries yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    {% endif %}
+</div>
+
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if cash_flow %}
+<script>
+const ctx = document.getElementById('cashFlowChart');
+if (ctx) {
+    const historyLabels = [{% for h in cash_flow.history %}"{{ h.label }}",{% endfor %} "Next Month"];
+    const incomeData = [{% for h in cash_flow.history %}{{ h.income }},{% endfor %} {{ cash_flow.predicted_income }}];
+    const expenseData = [{% for h in cash_flow.history %}{{ h.expenses }},{% endfor %} {{ cash_flow.predicted_expenses }}];
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: historyLabels,
+            datasets: [
+                { label: 'Income', data: incomeData, borderColor: '#198754', tension: 0.3 },
+                { label: 'Expenses', data: expenseData, borderColor: '#dc3545', tension: 0.3 }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+}
+</script>
+{% endif %}
+{% endblock %}

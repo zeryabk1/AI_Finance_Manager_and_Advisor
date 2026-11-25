@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}General Ledger{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0"><i class="bi bi-book"></i> General Ledger {% if company %}<small class="text-muted fs-6">({{ company.name }})</small>{% endif %}</h3>
+    <div>
+        <a href="{% url 'reports:general_ledger_pdf' %}" class="btn btn-outline-danger btn-sm"><i class="bi bi-file-earmark-pdf"></i> Export PDF</a>
+        <a href="{% url 'reports:general_ledger_excel' %}" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-excel"></i> Export Excel</a>
+    </div>
+</div>
+{% for item in ledger_data %}
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-white"><strong>{{ item.account.code }} - {{ item.account.name }}</strong></div>
+    <div class="table-responsive">
+    <table class="table mb-0">
+        <thead><tr><th>Date</th><th>Journal #</th><th>Description</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead>
+        <tbody>
+        {% for e in item.entries %}
+            <tr>
+                <td>{{ e.date }}</td>
+                <td>JV-{{ e.journal_no }}</td>
+                <td>{{ e.description }}</td>
+                <td>{{ e.debit|default:'' }}</td>
+                <td>{{ e.credit|default:'' }}</td>
+                <td>{{ e.balance }} {{ e.side }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6" class="text-center text-muted">No transactions.</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot><tr><th colspan="5" class="text-end">Closing Balance (Dr = debit, Cr = credit)</th><th>{{ item.closing.balance }} {{ item.closing.side }}{% if item.closing.unusual %} <span class="badge bg-warning text-dark" title="This account normally has a {{ item.normal_side }} balance. A missing purchase / opening entry is the usual cause.">&#9888; unusual</span>{% endif %}</th></tr></tfoot>
+    </table>
+    </div>
+</div>
+{% empty %}
+<p class="text-muted">No accounts yet.</p>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="bi bi-speedometer2"></i> Dashboard</h3>
+    {% if companies %}
+    <div class="dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            {% if company %}{{ company.name }}{% else %}Select Company{% endif %}
+        </button>
+        <ul class="dropdown-menu">
+            {% for c in companies %}
+                <li><a class="dropdown-item" href="{% url 'accounting:switch_company' c.pk %}">
+                    {{ c.name }}
+                    {% if c.owner != user %}<span class="text-muted small">(owned by {{ c.owner.username }})</span>{% endif %}
+                </a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+
+{% if not companies %}
+    <div class="alert alert-info">
+        {% if user.role == 'COMPANY_OWNER' or user.role == 'SUPER_ADMIN' %}
+            Welcome! Start by <a href="{% url 'companies:create' %}">creating your first company</a>.
+        {% else %}
+            You don't have access to any company yet. Your Company Owner
+            needs to create your login from <strong>Companies &rarr; Staff</strong>
+            using your email address (<code>{{ user.email }}</code>) — once they
+            do, this dashboard will show your company automatically.
+        {% endif %}
+    </div>
+{% else %}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm">
+            <div class="text-muted small">Companies</div>
+            <div class="fs-3 fw-bold">{{ companies_count }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm">
+            <div class="text-muted small">Revenue</div>
+            <div class="fs-3 fw-bold text-success">{{ revenue }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm">
+            <div class="text-muted small">Expenses</div>
+            <div class="fs-3 fw-bold text-danger">{{ expenses }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm">
+            <div class="text-muted small">Net Profit</div>
+            <div class="fs-3 fw-bold">{{ profit }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+            <h6>Revenue vs Expenses</h6>
+            <canvas id="revExpChart" height="180"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+            <h6>Recent Activity</h6>
+            <ul class="list-group list-group-flush">
+                {% for e in recent_entries %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ e.date }} — {{ e.description }}</span>
+                        <span class="fw-bold">{{ e.amount }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">No activity yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const ctx = document.getElementById('revExpChart');
+if (ctx) {
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Revenue', 'Expenses'],
+            datasets: [{
+                label: 'Amount',
+                data: [{{ revenue }}, {{ expenses }}],
+                backgroundColor: ['#198754', '#dc3545']
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+HOW TO BUILD AI_Finance_Manager.exe
+====================================
+
+You need to do this ONCE, on your own Windows PC (the same one
+where the app already runs with `python manage.py runserver`).
+
+WANT YOUR OWN LOGO ON IT FIRST? Read MAKE_YOUR_ICON.txt before
+step 2 below - it's one extra command and build_exe.bat will pick
+it up automatically.
+
+1. Open this AI_Finance_Manager folder.
+2. Double-click build_exe.bat
+   - A black terminal window opens (this one is normal, it's just
+     the build process) and does everything automatically:
+     installs PyInstaller, then builds the app.
+   - This takes a few minutes (it's bundling Django + pandas +
+     scikit-learn + everything else it needs).
+3. When it finishes, you'll find a FOLDER at:
+       dist\AI_Finance_Manager\
+   Inside it: AI_Finance_Manager.exe plus a "_internal" folder of
+   dependencies it needs sitting right next to it.
+
+TO SHARE IT
+------------
+Right-click the "AI_Finance_Manager" folder (the one inside dist)
+-> Send to -> Compressed (zipped) folder, and send that zip.
+The other person unzips it ONCE, then just double-clicks the .exe
+inside every time after that.
+
+This is a folder instead of a single file on purpose — it makes
+the app open in a couple of seconds instead of 15-60+ seconds.
+A single-file .exe has to unpack the entire app into a temp folder
+every single time it's opened, which is slow for an app this size
+(Django + scikit-learn + pandas + numpy bundled together). A
+folder-based build unpacks once, at build time, so nothing needs
+re-extracting on every launch.
+
+WHAT HAPPENS WHEN SOMEONE RUNS THE .EXE
+----------------------------------------
+- NO console/command-line window opens. It quietly sets up its own
+  database automatically (first run only), and their default
+  browser opens to the app.
+- Their data is saved on THEIR OWN computer at:
+       %LOCALAPPDATA%\AIFinanceManager\db.sqlite3
+- This is NOT a shared/synced database. If you and a friend both
+  run the exe, you each get your own separate, independent copy
+  of the app and its data — like two people each installing the
+  same software separately, not two people editing the same file.
+- Since there's no console window, closing something won't stop
+  it — see "TO STOP THE APP" below.
+- Startup logs (useful if something goes wrong) are written to:
+       %LOCALAPPDATA%\AIFinanceManager\app.log
+
+TO STOP THE APP
+----------------
+Open Task Manager (Ctrl+Shift+Esc), find "AI_Finance_Manager.exe"
+under Processes, and click End Task.
+
+IMPORTANT - READ BEFORE SHARING THE EXE
+-----------------------------------------
+Your Gmail address and Gmail App Password (used for password-reset
+emails) are currently hardcoded in financeproject/settings.py.
+Building the exe bakes that password into the binary in a way
+that can be extracted by anyone who has the file (e.g. by running
+a "strings" tool on it). Before sending the exe to other people:
+  - Go to your Google Account -> Security -> App Passwords
+  - Revoke the current app password and generate a new one
+  - Only put the NEW one in settings.py if you're comfortable
+    with recipients being able to recover it from the exe
+  - Or simplest: remove/blank EMAIL_HOST_USER and
+    EMAIL_HOST_PASSWORD in settings.py before building if you
+    don't need password-reset emails to work for other people.
+
+IF THE BUILD FAILS
+--------------------
+PyInstaller will print an error, usually something like:
+    ModuleNotFoundError: No module named 'something'
+Copy that exact error and send it back - it usually just means
+one more package needs to be added to the --collect-all or
+--collect-submodules list in build_exe.bat.

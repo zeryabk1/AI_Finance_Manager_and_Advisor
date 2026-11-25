@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Inventory Valuation{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0"><i class="bi bi-calculator"></i> Inventory Valuation
+        {% if company %}<small class="text-muted fs-6">({{ company.name }})</small>{% endif %}</h3>
+    <a href="{% url 'inventory:item_list' %}" class="btn btn-outline-secondary btn-sm">Back to Inventory</a>
+</div>
+
+<div class="card p-3 mb-3">
+    <div class="row g-3">
+        <div class="col-md-4"><div class="text-muted small">Accounting standard</div>
+            <span class="badge bg-primary fs-6">{{ company.standard_label }}</span>
+            <a href="{% url 'companies:update' company.pk %}" class="small ms-2">change</a></div>
+        <div class="col-md-4"><div class="text-muted small">Cost-flow method</div>
+            <span class="badge bg-info text-dark fs-6">{{ method_label }}</span>
+            {% if method_overridden %}<div class="text-danger small">Saved method is not allowed under IFRS - FIFO is used.</div>{% endif %}</div>
+        <div class="col-md-4"><div class="text-muted small">Measurement rule</div>
+            {% if ifrs %}<strong>Lower of cost and NRV</strong> <span class="text-muted small">(IAS 2)</span>
+            {% elif data.method == 'LIFO' %}<strong>Lower of cost and market</strong> <span class="text-muted small">(ASC 330)</span>
+            {% else %}<strong>Lower of cost and NRV</strong> <span class="text-muted small">(ASC 330)</span>{% endif %}</div>
+    </div>
+    <hr>
+    <div class="small text-muted">
+        {% if ifrs %}
+            IFRS: LIFO is prohibited. If an item's NRV recovers, a previous write-down <strong>must be reversed</strong> (up to original cost).
+        {% else %}
+            US GAAP: LIFO is allowed. A write-down creates a new cost basis and is <strong>never reversed</strong>, even if NRV recovers.
+        {% endif %}
+    </div>
+</div>
+
+<div class="table-responsive">
+<table class="table table-striped bg-white shadow-sm align-middle">
+    <thead><tr>
+        <th>Item</th><th class="text-end">Qty</th><th class="text-end">Cost / unit</th><th class="text-end">Total cost</th>
+        <th class="text-end">NRV / unit</th>{% if data.method == 'LIFO' and not ifrs %}<th class="text-end">Market / unit</th>{% endif %}
+        <th class="text-end">Write-down</th><th class="text-end">Carrying value</th><th>Basis</th>
+    </tr></thead>
+    <tbody>
+    {% for r in data.rows %}
+        <tr class="{% if r.writedown %}table-warning{% endif %}">
+            <td>{{ r.item.item_name }}{% if r.estimated %} <span class="badge bg-secondary" title="Some units have no purchase layer; costed at the item's cost price.">est.</span>{% endif %}</td>
+            <td class="text-end">{{ r.qty }}</td>
+            <td class="text-end">{{ r.cost_unit }}</td>
+            <td class="text-end">{{ r.cost_total }}</td>
+            <td class="text-end">{{ r.nrv_unit }}</td>
+            {% if data.method == 'LIFO' and not ifrs %}<td class="text-end">{{ r.market_unit }}</td>{% endif %}
+            <td class="text-end">{{ r.writedown }}</td>
+            <td class="text-end fw-bold">{{ r.carrying_total }}</td>
+            <td>{{ r.basis }}</td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="9" class="text-center text-muted">No inventory items yet.</td></tr>
+    {% endfor %}
+    </tbody>
+    <tfoot><tr class="fw-bold">
+        <td>Total</td><td></td><td></td><td class="text-end">{{ data.total_cost }}</td><td></td>
+        {% if data.method == 'LIFO' and not ifrs %}<td></td>{% endif %}
+        <td class="text-end">{{ data.total_writedown }}</td><td class="text-end">{{ data.total_carrying }}</td><td></td>
+    </tr></tfoot>
+</table>
+</div>
+
+<div class="card p-3">
+    {% if data.net_to_post > 0 %}
+        <p class="mb-2">A write-down of <strong>{{ data.net_to_post }}</strong> has not been posted to the ledger yet.</p>
+    {% elif data.net_to_post < 0 %}
+        <p class="mb-2">NRV has recovered: a reversal of <strong>{{ data.net_to_post }}</strong> is due (allowed under IFRS only).</p>
+    {% else %}
+        <p class="mb-2 text-success">Ledger is up to date with this valuation.</p>
+    {% endif %}
+    <form method="post" action="{% url 'inventory:post_valuation' %}" onsubmit="return confirm('Post this inventory adjustment to the General Ledger?');">
+        {% csrf_token %}
+        <button class="btn btn-primary" {% if not data.net_to_post %}disabled{% endif %}>Post adjustment to ledger</button>
+    </form>
+    <div class="text-muted small mt-2">Entry: Dr Inventory Write-down (expense) / Cr Inventory{% if ifrs %}; reversals post the opposite way{% endif %}.
+        NRV = selling price - estimated selling cost.</div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+HOW TO PUT YOUR OWN LOGO ON THE .EXE
+=====================================
+
+There are two different "logos" in this app - do both if you want it
+fully branded:
+
+  1. The .exe icon      -> what shows in File Explorer / the taskbar
+  2. The browser favicon -> the little icon in the browser tab
+
+Both are handled by the same script.
+
+STEPS
+-----
+1. Get your logo as a PNG or JPG file. Square, at least 256x256px,
+   works best (a rectangular logo will get padded, not squashed).
+
+2. Open a terminal in this AI_Finance_Manager folder and run:
+
+       python make_icon.py path\to\your_logo.png
+
+   This creates:
+       app_icon.ico              (used for the exe itself)
+       static\img\favicon.ico    (used for the browser tab)
+
+3. Run build_exe.bat like before. It will automatically detect
+   app_icon.ico and use it. The new exe will:
+       - show your logo as its file/taskbar icon
+       - show your logo in the browser tab when the app is open
+       - open with NO black command-line window
+
+4. Your new exe is at dist\AI_Finance_Manager.exe, same as before.
+
+NOTES
+-----
+- If you ever rebuild without app_icon.ico present, build_exe.bat
+  will just fall back to the default PyInstaller icon and tell you
+  so - it won't fail.
+- Windows sometimes caches old exe icons. If double-clicking the new
+  exe still shows the old icon in File Explorer, that's just an icon
+  cache issue - it clears on its own after a reboot, or you can google
+  "clear windows icon cache" for an instant fix.
+- Because the app now opens with --windowed (no console), there is
+  no window to close to stop it anymore. To stop it: open Task
+  Manager, find "AI_Finance_Manager.exe" (or "AI Finance Manager"),
+  and End Task. If you want a proper tray icon with a right-click
+  "Quit" option instead, that's a bit more code - just ask and I can
+  add one.

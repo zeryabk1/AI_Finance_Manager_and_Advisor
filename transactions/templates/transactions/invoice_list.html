@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Sales Invoices{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3><i class="bi bi-receipt"></i> Sales Invoices {% if company %}<small class="text-muted fs-6">({{ company.name }})</small>{% endif %}</h3>
+    <a href="{% url 'transactions:invoice_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Invoice</a>
+</div>
+<div class="table-responsive">
+<table class="table table-striped bg-white shadow-sm" data-datatable>
+    <thead><tr><th>#</th><th>Customer</th><th>Date</th><th>Total</th><th></th></tr></thead>
+    <tbody>
+    {% for inv in invoices %}
+        <tr>
+            <td>{{ inv.pk }}</td><td>{{ inv.customer.name }}</td><td>{{ inv.invoice_date }}</td><td>{{ inv.total }}</td>
+            <td><a href="{% url 'transactions:invoice_detail' inv.pk %}" class="btn btn-sm btn-outline-primary">View</a></td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="5" class="text-center text-muted">No invoices yet.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

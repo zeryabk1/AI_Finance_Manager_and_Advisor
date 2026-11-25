@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Delete{% endblock %}
+{% block content %}
+<h3 class="mb-4">Confirm Delete</h3>
+<div class="card p-4" style="max-width:500px;">
+    <p>Are you sure you want to delete <strong>{{ object }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url back_url %}" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

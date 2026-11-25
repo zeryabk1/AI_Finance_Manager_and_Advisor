@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Companies{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3><i class="bi bi-building"></i> Companies
+        {% if is_super_admin %}<span class="badge bg-dark">Super Admin — viewing all companies</span>{% endif %}
+    </h3>
+    {% if user.role == 'COMPANY_OWNER' or is_super_admin %}
+        <a href="{% url 'companies:create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Company</a>
+    {% endif %}
+</div>
+<form method="get" class="mb-3 d-flex" style="max-width:300px;">
+    <input type="text" name="q" value="{{ query }}" class="form-control me-2" placeholder="Search companies...">
+    <button class="btn btn-outline-secondary">Search</button>
+</form>
+<div class="table-responsive">
+<table class="table table-striped bg-white shadow-sm" data-datatable>
+    <thead><tr><th>Name</th><th>Owner</th><th>Your Access</th><th>Country</th><th>Currency</th><th>Actions</th></tr></thead>
+    <tbody>
+    {% for company in companies %}
+        <tr>
+            <td>{{ company.name }}</td>
+            <td>{{ company.owner.username }}</td>
+            <td>
+                {% if company.owner == user %}
+                    <span class="badge bg-success">Owner</span>
+                {% elif is_super_admin %}
+                    <span class="badge bg-dark">Super Admin</span>
+                {% else %}
+                    <span class="badge bg-info text-dark">Staff ({{ user.get_role_display }})</span>
+                {% endif %}
+            </td>
+            <td>{{ company.country }}</td>
+            <td>{{ company.currency }}</td>
+            <td>
+                {% if company.owner == user or is_super_admin %}
+                    <a href="{% url 'companies:update' company.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a href="{% url 'companies:manage_staff' company.pk %}" class="btn btn-sm btn-outline-secondary">Staff</a>
+                    <a href="{% url 'companies:delete' company.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                {% else %}
+                    <span class="text-muted small">Managed by {{ company.owner.username }}</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="6" class="text-center text-muted">No companies yet. Add your first company.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

@@ -1,0 +1,368 @@
+/* ==========================================================================
+   AI Finance Manager — "Black Professional" theme
+   Deep charcoal/black backdrop, dark frosted-glass panels, muted gold accent
+   ========================================================================== */
+
+:root {
+    --bg-1: #0a0b0d;
+    --bg-2: #111318;
+    --bg-3: #0d0f13;
+
+    --ink: #e9eaee;
+    --ink-soft: #a3a8b3;
+    --ink-faint: #6b7280;
+
+    --accent: #c9a24b;       /* muted gold */
+    --accent-dark: #a5822f;
+    --accent-2: #2f6fed;     /* steel blue, secondary */
+    --success: #2fb872;
+    --danger: #e5484d;
+    --warn: #d9a441;
+
+    --glass: rgba(24, 26, 31, 0.72);
+    --glass-strong: rgba(20, 22, 27, 0.85);
+    --glass-soft: rgba(30, 33, 39, 0.5);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-dark: rgba(6, 7, 9, 0.82);
+    --glass-dark-border: rgba(255, 255, 255, 0.06);
+
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 10px 34px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.55);
+
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-lg: 22px;
+}
+
+* { -webkit-font-smoothing: antialiased; }
+
+html, body { min-height: 100vh; }
+
+body {
+    background:
+        radial-gradient(900px 500px at -5% -10%, rgba(201, 162, 75, 0.10), transparent 60%),
+        radial-gradient(800px 600px at 105% 0%, rgba(47, 111, 237, 0.08), transparent 55%),
+        radial-gradient(900px 700px at 50% 115%, rgba(255, 255, 255, 0.04), transparent 55%),
+        linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 55%, var(--bg-3) 100%);
+    background-attachment: fixed;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-text, .btn {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+p, span, td, th, label, div { color: inherit; }
+
+a { color: var(--accent); }
+a:hover { color: var(--accent-dark); }
+
+/* Faint ambient glow, fixed behind everything */
+.aurora-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.35;
+}
+.aurora-blob.b1 { width: 460px; height: 460px; top: -180px; left: -140px; background: radial-gradient(circle, #c9a24b, transparent 70%); }
+.aurora-blob.b2 { width: 520px; height: 520px; top: 5%; right: -220px; background: radial-gradient(circle, #2f6fed, transparent 70%); }
+.aurora-blob.b3 { width: 460px; height: 460px; bottom: -220px; left: 25%; background: radial-gradient(circle, #ffffff, transparent 72%); opacity: 0.05; }
+
+/* ---------- Layout shell ---------- */
+.d-flex > .sidebar {
+    position: sticky;
+    top: 14px;
+    align-self: flex-start;
+    height: calc(100vh - 28px);
+    margin: 14px 0 14px 14px;
+    background: var(--glass-dark) !important;
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    border: 1px solid var(--glass-dark-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow-y: auto;
+    z-index: 2;
+}
+
+.sidebar h5 {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.72) !important;
+    font-size: 0.92rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.sidebar .nav-link i { width: 1.3em; display: inline-block; text-align: center; }
+
+.sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #ffffff !important;
+    transform: translateX(2px);
+}
+
+.sidebar .nav-link.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
+    color: #14161b !important;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(201, 162, 75, 0.3);
+}
+
+/* Top navbar */
+.navbar.bg-white {
+    background: var(--glass-strong) !important;
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius);
+    margin: 14px 14px 0 14px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    z-index: 2;
+}
+
+.navbar-text { color: var(--ink); font-weight: 600; }
+.navbar a { color: var(--ink-soft) !important; font-weight: 500; }
+.navbar a:hover { color: var(--accent) !important; }
+.navbar a.text-danger { color: var(--danger) !important; }
+
+.flex-grow-1 > .p-4 { position: relative; z-index: 1; }
+
+footer.border-top {
+    background: transparent;
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    color: var(--ink-faint);
+}
+
+/* ---------- Glass panels: cards, tables, modals, list groups ---------- */
+.card {
+    background: var(--glass) !important;
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-md);
+    color: var(--ink);
+}
+
+.card-header {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.table {
+    background: transparent;
+    color: var(--ink);
+}
+.table thead th {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--ink-soft);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.table tbody tr { border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+.table tbody td { color: var(--ink); }
+.table-hover tbody tr:hover { background: rgba(201, 162, 75, 0.08); }
+.table-striped tbody tr:nth-of-type(odd) { background-color: rgba(255, 255, 255, 0.02); }
+
+/* Bootstrap 5.3 sets its own --bs-table-striped-color (a dark shade) on
+   odd rows via ".table-striped > tbody > tr:nth-of-type(odd) > *", which
+   overrides --ink and makes odd-row text nearly invisible on this dark
+   theme. Force it back to the theme's ink color. */
+.table > tbody > tr > * {
+    color: var(--ink) !important;
+    background-color: transparent !important;
+}
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    background: var(--glass-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+}
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate { color: var(--ink-soft); }
+.dataTables_wrapper .dataTables_paginate .paginate_button { color: var(--ink-soft) !important; }
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--accent) !important;
+    color: #14161b !important;
+    border-color: var(--accent) !important;
+}
+
+.modal-content {
+    background: var(--glass-strong) !important;
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    color: var(--ink);
+}
+.modal-header, .modal-footer { border-color: rgba(255, 255, 255, 0.08); }
+.btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+
+.list-group-item {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--ink);
+}
+
+.dropdown-menu {
+    background: var(--glass-strong);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+}
+.dropdown-item { color: var(--ink-soft); }
+.dropdown-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--ink); }
+
+/* ---------- Buttons ---------- */
+.btn {
+    border-radius: 999px;
+    font-weight: 600;
+    padding-left: 1.15rem;
+    padding-right: 1.15rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    border: none;
+    color: #14161b;
+    box-shadow: 0 6px 18px rgba(201, 162, 75, 0.28);
+}
+.btn-primary:hover { box-shadow: 0 8px 22px rgba(201, 162, 75, 0.4); filter: brightness(1.05); color: #14161b; }
+
+.btn-outline-primary { border-color: var(--accent); color: var(--accent); }
+.btn-outline-primary:hover { background: var(--accent); border-color: var(--accent); color: #14161b; }
+
+.btn-secondary, .btn-light {
+    background: var(--glass-strong);
+    border: 1px solid var(--glass-border);
+    color: var(--ink);
+}
+.btn-secondary:hover, .btn-light:hover { background: rgba(255,255,255,0.1); color: var(--ink); }
+
+.btn-danger { background: linear-gradient(135deg, #f0656a, var(--danger)); border: none; }
+.btn-success { background: linear-gradient(135deg, #3fd48a, var(--success)); border: none; color: #0a1a10; }
+
+/* ---------- Forms ---------- */
+.form-control, .form-select {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+}
+.form-control::placeholder { color: var(--ink-faint); }
+.form-control:focus, .form-select:focus {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 0.2rem rgba(201, 162, 75, 0.18);
+    color: var(--ink);
+}
+html {
+    color-scheme: dark;
+}
+
+select, .form-select, .form-control {
+    color-scheme: dark;
+}
+
+.form-select option, .form-control option, select option {
+    background-color: #1a1c22 !important;
+    color: #e9eaee !important;
+}
+.form-select option:checked, .form-control option:checked, select option:checked,
+.form-select option:hover, .form-control option:hover, select option:hover,
+.form-select option:focus, .form-control option:focus, select option:focus {
+    background-color: var(--accent) !important;
+    color: #14161b !important;
+}
+.form-label { font-weight: 600; color: var(--ink-soft); font-size: 0.88rem; }
+.form-text, .text-muted { color: var(--ink-faint) !important; }
+
+/* ---------- Alerts / badges ---------- */
+.alert {
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    backdrop-filter: blur(12px);
+}
+.alert-success { background: rgba(47, 184, 114, 0.14); color: #7be0ac; border-color: rgba(47, 184, 114, 0.28); }
+.alert-danger  { background: rgba(229, 72, 77, 0.14); color: #f29a9d; border-color: rgba(229, 72, 77, 0.28); }
+.alert-warning { background: rgba(217, 164, 65, 0.16); color: #f0c67c; border-color: rgba(217, 164, 65, 0.3); }
+.alert-info    { background: rgba(47, 111, 237, 0.14); color: #9dbcf7; border-color: rgba(47, 111, 237, 0.28); }
+
+.badge { border-radius: 999px; font-weight: 600; }
+
+/* ---------- Auth pages (login/register/reset) ---------- */
+.auth-wrapper {
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+.glass-card {
+    background: var(--glass-strong) !important;
+    backdrop-filter: blur(26px) saturate(150%);
+    -webkit-backdrop-filter: blur(26px) saturate(150%);
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-lg);
+    color: var(--ink);
+}
+
+/* ---------- Scrollbar polish ---------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
+
+/* ---------- Fix: bg-white in templates was overriding table/card
+   backgrounds to solid white while text stayed light-colored,
+   making rows unreadable. Force these back to the dark theme. ---------- */
+.table.bg-white,
+.card-header.bg-white {
+    background: transparent !important;
+}
+
+/* Keep the top navbar's own bg-white (it's meant to be a light glass bar)
+   but make sure its text stays readable regardless of theme text color */
+.navbar.bg-white,
+.navbar.bg-white .navbar-text,
+.navbar.bg-white a:not(.text-danger) {
+    color: var(--ink) !important;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 767.98px) {
+    .d-flex > .sidebar { position: fixed; left: -260px; transition: left 0.25s ease; z-index: 50; }
+    .d-flex > .sidebar.open { left: 14px; }
+    .navbar { margin: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+}

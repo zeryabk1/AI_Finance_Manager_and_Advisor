@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block auth_content %}
+<div class="d-flex align-items-center justify-content-center auth-wrapper">
+    <div class="card glass-card p-4" style="width: 380px;">
+        <h4 class="text-center mb-3"><i class="bi bi-cash-coin"></i> AI Finance Manager</h4>
+        <p class="text-center text-muted">Sign in to your account</p>
+        {% if form.errors %}
+            <div class="alert alert-danger">Invalid username or password.</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Email or Username</label>
+                <input type="text" name="username" class="form-control" required autofocus>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="{% url 'accounts:password_reset' %}">Forgot Password?</a>
+        </div>
+        <div class="text-center mt-2">
+            New Company Owner? <a href="{% url 'accounts:register' %}">Register here</a>.<br>
+            <span class="text-muted small">Accountants and Employees: ask your Company Owner to create your login.</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
